@@ -6,6 +6,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 import * as XLSX from 'xlsx'
+import styles from './style.module.css'
 
 interface Item {
   id: number
@@ -16,6 +17,11 @@ interface Item {
 export default function ItemList() {
   const [items, setItems] = useState<Item[]>([])
   const [searchTerm, setSearchTerm] = useState<string>('')
+
+  // Estados para controlar a edição
+  const [editingItemId, setEditingItemId] = useState<number | null>(null)
+  const [editName, setEditName] = useState<string>('')
+  const [editQuantity, setEditQuantity] = useState<number>(0)
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -41,6 +47,36 @@ export default function ItemList() {
     }
   }
 
+  const handleEdit = (item: Item) => {
+    setEditingItemId(item.id)
+    setEditName(item.name)
+    setEditQuantity(item.quantity)
+  }
+
+  const handleUpdate = async () => {
+    try {
+      await axios.put(`/api/item`, {
+        id: editingItemId,
+        name: editName,
+        quantity: editQuantity,
+      })
+      setItems(
+        items.map((item) =>
+          item.id === editingItemId
+            ? { ...item, name: editName, quantity: editQuantity }
+            : item,
+        ),
+      )
+      toast.success('Item atualizado com sucesso!')
+      setEditingItemId(null)
+      setEditName('')
+      setEditQuantity(0)
+    } catch (error) {
+      toast.error('Erro ao atualizar item.')
+      console.error(error)
+    }
+  }
+
   const filteredItems = items.filter((item) =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase()),
   )
@@ -52,10 +88,10 @@ export default function ItemList() {
         const imgData = canvas.toDataURL('image/png')
         const pdf = new jsPDF()
 
-        const imgWidth = pdf.internal.pageSize.getWidth() // Largura da página PDF
-        const imgHeight = (canvas.height * imgWidth) / canvas.width // Ajusta a altura proporcionalmente à largura
+        const imgWidth = pdf.internal.pageSize.getWidth()
+        const imgHeight = (canvas.height * imgWidth) / canvas.width
 
-        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight) // Usa a largura e altura proporcionais
+        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight)
         pdf.save('items.pdf')
       })
     }
@@ -63,7 +99,7 @@ export default function ItemList() {
 
   const exportExcel = () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const dataToExport = filteredItems.map(({ id, ...rest }) => rest) // Remove o campo id
+    const dataToExport = filteredItems.map(({ id, ...rest }) => rest)
     const worksheet = XLSX.utils.json_to_sheet(dataToExport)
     const workbook = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Itens')
@@ -71,49 +107,88 @@ export default function ItemList() {
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-xl font-bold">Lista de Itens</h1>
+    <div className={styles.container}>
+      <h1 className={styles.title}>Lista de Itens</h1>
       <input
         type="text"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         placeholder="Buscar por nome"
-        className="border px-4 py-2 mb-4 w-full"
+        className={styles.searchInput}
       />
-      <div className="flex gap-4 mb-4">
+      <div className={styles.buttonGroup}>
         <button
           onClick={exportPDF}
-          className="bg-blue-500 text-white px-4 py-2 rounded"
+          className={`${styles.button} ${styles.pdfButton}`}
         >
           Gerar PDF
         </button>
         <button
           onClick={exportExcel}
-          className="bg-green-500 text-white px-4 py-2 rounded"
+          className={`${styles.button} ${styles.excelButton}`}
         >
           Exportar Excel
         </button>
       </div>
-      <table id="table-to-pdf" className="min-w-full table-auto">
+      <table id="table-to-pdf" className={styles.table}>
         <thead>
           <tr>
-            <th className="px-4 py-2">Nome</th>
-            <th className="px-4 py-2">Quantidade</th>
-            <th className="px-4 py-2">Ações</th>
+            <th>Nome</th>
+            <th>Quantidade</th>
+            <th>Ações</th>
           </tr>
         </thead>
         <tbody>
           {filteredItems.map((item) => (
             <tr key={item.id}>
-              <td className="border px-4 py-2">{item.name}</td>
-              <td className="border px-4 py-2">{item.quantity}</td>
-              <td className="border px-4 py-2">
-                <button
-                  onClick={() => handleDelete(item.id)}
-                  className="text-red-500"
-                >
-                  Deletar
-                </button>
+              <td>
+                {editingItemId === item.id ? (
+                  <input
+                    type="text"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    className={styles.editInput}
+                  />
+                ) : (
+                  item.name
+                )}
+              </td>
+              <td>
+                {editingItemId === item.id ? (
+                  <input
+                    type="number"
+                    value={editQuantity}
+                    onChange={(e) => setEditQuantity(Number(e.target.value))}
+                    className={styles.editInput}
+                  />
+                ) : (
+                  item.quantity
+                )}
+              </td>
+              <td className={styles.tdButtons}>
+                {editingItemId === item.id ? (
+                  <button
+                    onClick={handleUpdate}
+                    className={styles.updateButton}
+                  >
+                    Atualizar
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => handleEdit(item)}
+                      className={styles.editButton}
+                    >
+                      Editar
+                    </button>
+                    <button
+                      onClick={() => handleDelete(item.id)}
+                      className={styles.deleteButton}
+                    >
+                      Deletar
+                    </button>
+                  </>
+                )}
               </td>
             </tr>
           ))}

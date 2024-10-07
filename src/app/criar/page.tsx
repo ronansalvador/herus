@@ -3,6 +3,7 @@ import { useState } from 'react'
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import styles from './style.module.css'
 
 export default function CreateItem() {
   const [name, setName] = useState('')
@@ -23,23 +24,23 @@ export default function CreateItem() {
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-xl font-bold">Cadastrar Novo Item</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <div className={styles.container}>
+      <h1 className={styles.title}>Cadastrar Novo Item</h1>
+      <form onSubmit={handleSubmit} className={styles.form}>
         <div>
-          <label htmlFor="name" className="block font-medium">
+          <label htmlFor="name" className={styles.label}>
             Nome do Item
           </label>
           <input
             id="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="border border-gray-300 p-2 w-full"
+            className={styles.input}
             required
           />
         </div>
         <div>
-          <label htmlFor="quantity" className="block font-medium">
+          <label htmlFor="quantity" className={styles.label}>
             Quantidade Inicial
           </label>
           <input
@@ -47,11 +48,11 @@ export default function CreateItem() {
             type="number"
             value={quantity}
             onChange={(e) => setQuantity(Number(e.target.value))}
-            className="border border-gray-300 p-2 w-full"
+            className={styles.input}
             required
           />
         </div>
-        <button type="submit" className="bg-blue-500 text-white p-2 rounded">
+        <button type="submit" className={styles.button}>
           Salvar
         </button>
       </form>

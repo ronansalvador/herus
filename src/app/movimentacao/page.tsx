@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import styles from './style.module.css' // Importando o CSS module
 
 interface Item {
   id: number
@@ -15,6 +16,7 @@ export default function StockChange() {
     undefined,
   )
   const [change, setChange] = useState(0)
+  const [searchTerm, setSearchTerm] = useState<string>('') // Estado para armazenar o termo de busca
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -45,22 +47,40 @@ export default function StockChange() {
     }
   }
 
+  // Função para filtrar os itens com base no termo de busca
+  const filteredItems = items.filter((item) =>
+    item.name.toLowerCase().includes(searchTerm.toLowerCase()),
+  )
+
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-xl font-bold">Entrada / Retirada de Itens</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <div className={styles.container}>
+      <h1 className={styles.title}>Entrada / Retirada de Itens</h1>
+      <form onSubmit={handleSubmit} className={styles.form}>
         <div>
-          <label htmlFor="item" className="block font-medium">
+          <label htmlFor="search" className={styles.label}>
+            Buscar Item
+          </label>
+          <input
+            id="search"
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)} // Atualiza o termo de busca
+            placeholder="Digite o nome do item"
+            className={styles.input}
+          />
+        </div>
+        <div>
+          <label htmlFor="item" className={styles.label}>
             Item
           </label>
           <select
             id="item"
             value={selectedItemId}
             onChange={(e) => setSelectedItemId(Number(e.target.value))}
-            className="border border-gray-300 p-2 w-full"
+            className={styles.select}
           >
             <option value="">Selecione um item</option>
-            {items.map((item) => (
+            {filteredItems.map((item) => (
               <option key={item.id} value={item.id}>
                 {item.name}
               </option>
@@ -68,7 +88,7 @@ export default function StockChange() {
           </select>
         </div>
         <div>
-          <label htmlFor="change" className="block font-medium">
+          <label htmlFor="change" className={styles.label}>
             Mudança de Quantidade
           </label>
           <input
@@ -76,11 +96,11 @@ export default function StockChange() {
             type="number"
             value={change}
             onChange={(e) => setChange(Number(e.target.value))}
-            className="border border-gray-300 p-2 w-full"
+            className={styles.input}
             required
           />
         </div>
-        <button type="submit" className="bg-blue-500 text-white p-2 rounded">
+        <button type="submit" className={styles.button}>
           Atualizar Estoque
         </button>
       </form>
