@@ -1,11 +1,19 @@
 'use client'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import { toast } from 'react-toastify'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+
+interface Item {
+  id: number
+  name: string
+}
 
 export default function StockChange() {
-  const [items, setItems] = useState([])
-  const [selectedItemId, setSelectedItemId] = useState(null)
+  const [items, setItems] = useState<Item[]>([])
+  const [selectedItemId, setSelectedItemId] = useState<number | undefined>(
+    undefined,
+  )
   const [change, setChange] = useState(0)
 
   useEffect(() => {
@@ -76,6 +84,7 @@ export default function StockChange() {
           Atualizar Estoque
         </button>
       </form>
+      <ToastContainer />
     </div>
   )
 }

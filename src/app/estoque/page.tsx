@@ -51,13 +51,18 @@ export default function ItemList() {
       html2canvas(input).then((canvas) => {
         const imgData = canvas.toDataURL('image/png')
         const pdf = new jsPDF()
-        pdf.addImage(imgData, 'PNG', 0, 0)
+
+        const imgWidth = pdf.internal.pageSize.getWidth() // Largura da página PDF
+        const imgHeight = (canvas.height * imgWidth) / canvas.width // Ajusta a altura proporcionalmente à largura
+
+        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight) // Usa a largura e altura proporcionais
         pdf.save('items.pdf')
       })
     }
   }
 
   const exportExcel = () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const dataToExport = filteredItems.map(({ id, ...rest }) => rest) // Remove o campo id
     const worksheet = XLSX.utils.json_to_sheet(dataToExport)
     const workbook = XLSX.utils.book_new()
