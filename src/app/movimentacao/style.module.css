@@ -31,10 +31,6 @@
   background-color: #005bb5;
 }
 
-.active {
-  background-color: #005bb5;
-}
-
 .form {
   display: flex;
   flex-direction: column;
@@ -58,11 +54,17 @@
   outline: none;
 }
 
-.button {
+.buttonEntry {
   background-color: #28a745;
   color: white;
 }
 
-.button:hover {
-  background-color: #218838;
+.buttonExit {
+  background-color: red;
+  color: white;
+}
+
+.active {
+  outline: 3px solid #0056b3; /* Borda externa */
+  outline-offset: 2px; /* Espaçamento entre a borda e o botão */
 }

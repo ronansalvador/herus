@@ -24,7 +24,7 @@ export async function GET() {
         servico: true, // Inclui o serviço relacionado, se houver
       },
     })
-    console.log(stockChanges)
+
     return NextResponse.json(stockChanges)
   } catch (error) {
     return NextResponse.json(
@@ -39,7 +39,6 @@ export async function GET() {
 
 // POST: Criar uma nova mudança de estoque
 export async function POST(req: Request) {
-  console.log('POST passou aqui')
   try {
     const { itemId, change, servicoId }: StockChangeCreate = await req.json()
     const newStockChange = await prisma.stockChange.create({
@@ -60,7 +59,6 @@ export async function POST(req: Request) {
       },
     })
 
-    console.log('newStockChange', newStockChange)
     return NextResponse.json({ newStockChange, updatedItem })
   } catch (error) {
     return NextResponse.json(
@@ -75,7 +73,6 @@ export async function POST(req: Request) {
 
 // DELETE: Deletar uma mudança de estoque pelo id
 export async function DELETE(req: Request) {
-  console.log('DELETE passou aqui')
   try {
     const { id }: { id: number } = await req.json()
     const deletedStockChange = await prisma.stockChange.delete({

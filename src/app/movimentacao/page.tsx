@@ -88,13 +88,17 @@ export default function StockChange() {
       {/* Botões para selecionar entrada ou saída */}
       <div className={styles.buttonGroup}>
         <button
-          className={`${styles.button} ${isEntry ? styles.active : ''}`}
+          className={`${styles.button} ${styles.buttonEntry} ${
+            isEntry ? styles.active : ''
+          }`}
           onClick={() => setIsEntry(true)}
         >
           Entrada
         </button>
         <button
-          className={`${styles.button} ${!isEntry ? styles.active : ''}`}
+          className={`${styles.button} ${styles.buttonExit} ${
+            !isEntry ? styles.active : ''
+          }`}
           onClick={() => setIsEntry(false)}
         >
           Saída
