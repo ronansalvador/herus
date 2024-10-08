@@ -33,4 +33,13 @@ model StockChange {
   item      Item     @relation(fields: [itemId], references: [id])
   change    Int // Quantidade que foi adicionada ou removida
   timestamp DateTime @default(now())
+  servicoId Int? // Campo opcional para o ID do serviço
+  servico   Servico? @relation(fields: [servicoId], references: [id]) // Relacionamento opcional com Servico
+}
+
+model Servico {
+  id        Int           @id @default(autoincrement())
+  cliente   String // Nome do cliente ou obra
+  createdAt DateTime      @default(now()) // Data de criação do serviço
+  changes   StockChange[] // Relacionamento com StockChange para acompanhar os materiais utilizados
 }

@@ -10,13 +10,25 @@ interface Item {
   name: string
 }
 
+interface Servico {
+  id: number
+  cliente: string
+}
+
 export default function StockChange() {
   const [items, setItems] = useState<Item[]>([])
+  const [services, setServices] = useState<Servico[]>([])
+
   const [selectedItemId, setSelectedItemId] = useState<number | undefined>(
     undefined,
   )
+  const [selectedServiceId, setSelectedServiceId] = useState<
+    number | undefined
+  >(undefined)
   const [change, setChange] = useState(0)
-  const [searchTerm, setSearchTerm] = useState<string>('') // Estado para armazenar o termo de busca
+  const [itemSearchTerm, setItemSearchTerm] = useState<string>('')
+  const [serviceSearchTerm, setServiceSearchTerm] = useState<string>('')
+  const [isEntry, setIsEntry] = useState<boolean>(true) // Estado para determinar se é entrada ou saída
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -28,7 +40,19 @@ export default function StockChange() {
         toast.error('Erro ao carregar itens.')
       }
     }
+
+    const fetchServices = async () => {
+      try {
+        const response = await axios.get('/api/servico')
+        setServices(response.data)
+      } catch (error) {
+        console.log(error)
+        toast.error('Erro ao carregar serviços.')
+      }
+    }
+
     fetchItems()
+    fetchServices()
   }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -36,39 +60,64 @@ export default function StockChange() {
     try {
       const response = await axios.post('/api/estoque', {
         itemId: selectedItemId,
-        change,
+        servicoId: isEntry ? undefined : selectedServiceId, // Vincula o serviço apenas se não for entrada
+        change: isEntry ? change : -change, // Altera o sinal da quantidade
       })
       toast.success('Estoque atualizado com sucesso!')
       console.log(response)
       setChange(0)
+      setSelectedServiceId(undefined)
     } catch (error) {
       console.log(error)
       toast.error('Erro ao atualizar estoque.')
     }
   }
 
-  // Função para filtrar os itens com base no termo de busca
   const filteredItems = items.filter((item) =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase()),
+    item.name.toLowerCase().includes(itemSearchTerm.toLowerCase()),
+  )
+
+  const filteredServices = services.filter((service) =>
+    service.cliente.toLowerCase().includes(serviceSearchTerm.toLowerCase()),
   )
 
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Entrada / Retirada de Itens</h1>
+
+      {/* Botões para selecionar entrada ou saída */}
+      <div className={styles.buttonGroup}>
+        <button
+          className={`${styles.button} ${isEntry ? styles.active : ''}`}
+          onClick={() => setIsEntry(true)}
+        >
+          Entrada
+        </button>
+        <button
+          className={`${styles.button} ${!isEntry ? styles.active : ''}`}
+          onClick={() => setIsEntry(false)}
+        >
+          Saída
+        </button>
+      </div>
+
       <form onSubmit={handleSubmit} className={styles.form}>
+        {/* Campo de busca para itens */}
         <div>
-          <label htmlFor="search" className={styles.label}>
+          <label htmlFor="searchItem" className={styles.label}>
             Buscar Item
           </label>
           <input
-            id="search"
+            id="searchItem"
             type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)} // Atualiza o termo de busca
+            value={itemSearchTerm}
+            onChange={(e) => setItemSearchTerm(e.target.value)}
             placeholder="Digite o nome do item"
             className={styles.input}
           />
         </div>
+
+        {/* Select de itens */}
         <div>
           <label htmlFor="item" className={styles.label}>
             Item
@@ -87,6 +136,47 @@ export default function StockChange() {
             ))}
           </select>
         </div>
+
+        {/* Campo de busca para serviços */}
+        {!isEntry && (
+          <div>
+            <label htmlFor="searchService" className={styles.label}>
+              Buscar Serviço
+            </label>
+            <input
+              id="searchService"
+              type="text"
+              value={serviceSearchTerm}
+              onChange={(e) => setServiceSearchTerm(e.target.value)}
+              placeholder="Digite o nome do cliente ou obra"
+              className={styles.input}
+            />
+          </div>
+        )}
+
+        {/* Select de serviços */}
+        {!isEntry && (
+          <div>
+            <label htmlFor="service" className={styles.label}>
+              Serviço
+            </label>
+            <select
+              id="service"
+              value={selectedServiceId}
+              onChange={(e) => setSelectedServiceId(Number(e.target.value))}
+              className={styles.select}
+            >
+              <option value="">Selecione um serviço</option>
+              {filteredServices.map((service) => (
+                <option key={service.id} value={service.id}>
+                  {service.cliente}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {/* Input para mudança de quantidade */}
         <div>
           <label htmlFor="change" className={styles.label}>
             Mudança de Quantidade

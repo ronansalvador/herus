@@ -5,12 +5,14 @@ import { NextResponse } from 'next/server'
 interface StockChangeCreate {
   itemId: number
   change: number
+  servicoId?: number // Campo opcional para vincular a um serviço
 }
 
 // Interface para atualizar uma mudança de estoque
 interface UpdateStockChange {
   id: number
   change?: number
+  servicoId?: number // Campo opcional para vincular a um serviço
 }
 
 // GET: Listar todas as mudanças de estoque
@@ -19,6 +21,7 @@ export async function GET() {
     const stockChanges = await prisma.stockChange.findMany({
       include: {
         item: true, // Inclui o item relacionado para cada mudança de estoque
+        servico: true, // Inclui o serviço relacionado, se houver
       },
     })
     console.log(stockChanges)
@@ -38,11 +41,12 @@ export async function GET() {
 export async function POST(req: Request) {
   console.log('POST passou aqui')
   try {
-    const { itemId, change }: StockChangeCreate = await req.json()
+    const { itemId, change, servicoId }: StockChangeCreate = await req.json()
     const newStockChange = await prisma.stockChange.create({
       data: {
         itemId,
         change,
+        servicoId, // Vincula a um serviço, se aplicável
       },
     })
 
@@ -94,11 +98,12 @@ export async function DELETE(req: Request) {
 export async function PUT(req: Request) {
   console.log('PUT passou aqui')
   try {
-    const { id, change }: UpdateStockChange = await req.json()
+    const { id, change, servicoId }: UpdateStockChange = await req.json()
     const updatedStockChange = await prisma.stockChange.update({
       where: { id: Number(id) },
       data: {
         change,
+        servicoId, // Atualiza o campo servicoId, se fornecido
       },
     })
     console.log('stockChange atualizado', updatedStockChange)
@@ -118,11 +123,14 @@ export async function PUT(req: Request) {
 export async function PATCH(req: Request) {
   console.log('PATCH passou aqui')
   try {
-    const { id, change }: UpdateStockChange = await req.json()
+    const { id, change, servicoId }: UpdateStockChange = await req.json()
     const updateData: Partial<StockChangeCreate> = {}
 
     if (change !== undefined) {
       updateData.change = change
+    }
+    if (servicoId !== undefined) {
+      updateData.servicoId = servicoId
     }
 
     const updatedStockChange = await prisma.stockChange.update({

@@ -1,0 +1,74 @@
+/* ServiceMovements.module.css */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 8px; /* Espaçamento abaixo do label */
+}
+
+.input {
+  border: 1px solid #d1d5db; /* Cor da borda */
+  padding: 0.5rem;
+  width: 100%;
+  margin-bottom: 1rem; /* Espaçamento abaixo do input */
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse; /* Colapsar bordas */
+  margin-top: 1rem; /* Espaçamento acima da tabela */
+}
+
+.table th,
+.table td {
+  border: 1px solid #d1d5db; /* Cor da borda */
+  padding: 0.5rem;
+  text-align: left; /* Alinhamento à esquerda */
+}
+
+.table th {
+  background-color: #f8f9fa; /* Cor de fundo para o cabeçalho */
+}
+
+.table tr:nth-child(even) {
+  background-color: #f2f2f2; /* Cor de fundo para linhas pares */
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.button {
+  padding: 12px 16px;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+}
+.pdfButton {
+  background-color: #007bff;
+}
+
+.excelButton {
+  background-color: #28a745;
+}
+
+.pdfButton:hover {
+  background-color: #0056b3;
+}
+
+.excelButton:hover {
+  background-color: #218838;
+}

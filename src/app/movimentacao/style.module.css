@@ -1,42 +1,68 @@
-/* StockChange.module.css */
 .container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 16px;
+  padding: 20px;
+  max-width: 600px;
+  margin: auto;
 }
 
 .title {
-  font-size: 1.25rem;
-  font-weight: bold;
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.button {
+  margin: 0 10px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #0070f3;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.button:hover {
+  background-color: #005bb5;
+}
+
+.active {
+  background-color: #005bb5;
 }
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
 }
 
 .label {
-  display: block;
-  font-weight: 500;
+  margin-bottom: 5px;
 }
 
-.select,
-.input {
-  border: 1px solid #d1d5db; /* Cor da borda */
-  padding: 0.5rem;
-  width: 100%;
+.input,
+.select {
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.input:focus,
+.select:focus {
+  border-color: #0070f3;
+  outline: none;
 }
 
 .button {
-  background-color: #007bff;
+  background-color: #28a745;
   color: white;
-  padding: 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
 }
 
 .button:hover {
-  background-color: #0056b3;
+  background-color: #218838;
 }
