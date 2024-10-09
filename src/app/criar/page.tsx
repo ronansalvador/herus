@@ -7,8 +7,8 @@ import styles from './style.module.css'
 
 export default function CreateItem() {
   const [name, setName] = useState('')
-  const [quantity, setQuantity] = useState(0)
-  const [price, setPrice] = useState(0.0) // Adicionando o estado do campo price
+  const [quantity, setQuantity] = useState('')
+  const [price, setPrice] = useState('') // Adicionando o estado do campo price
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -17,8 +17,8 @@ export default function CreateItem() {
       console.log(response)
       toast.success('Item criado com sucesso!')
       setName('')
-      setQuantity(0)
-      setPrice(0.0) // Resetando o campo price após sucesso
+      setQuantity('')
+      setPrice('') // Resetando o campo price após sucesso
     } catch (error) {
       toast.error('Erro ao criar item.')
       console.log(error)
@@ -49,7 +49,7 @@ export default function CreateItem() {
             id="quantity"
             type="number"
             value={quantity}
-            onChange={(e) => setQuantity(Number(e.target.value))}
+            onChange={(e) => setQuantity(e.target.value)}
             className={styles.input}
             required
           />
@@ -62,7 +62,7 @@ export default function CreateItem() {
             id="price"
             type="number"
             value={price}
-            onChange={(e) => setPrice(Number(e.target.value))}
+            onChange={(e) => setPrice(e.target.value)}
             className={styles.input}
             required
           />

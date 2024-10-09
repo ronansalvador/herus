@@ -18,14 +18,14 @@ const Navbar = () => {
 
   return (
     <nav className={styles.navbar}>
-      <div className={styles.logo}>Controle Herus</div>
+      <div className={styles.logo}>Estoque Herus</div>
       <div className={styles.menuIcon} onClick={toggleMenu}>
         {isOpen ? '✖️' : '☰'}
       </div>
       <ul className={`${styles.navLinks} ${isOpen ? styles.active : ''}`}>
         <li>
           <Link href="/criar" onClick={closeMenu}>
-            Criar
+            Cadastro de Produto
           </Link>
         </li>
         <li>
@@ -35,17 +35,17 @@ const Navbar = () => {
         </li>
         <li>
           <Link href="/movimentacao" onClick={closeMenu}>
-            Movimentação
+            Entrada / Saída
           </Link>
         </li>
         <li>
           <Link href="/cadastro" onClick={closeMenu}>
-            Cadastro
+            Clientes
           </Link>
         </li>
         <li>
           <Link href="/clientes" onClick={closeMenu}>
-            Clientes
+            Movimentações
           </Link>
         </li>
       </ul>

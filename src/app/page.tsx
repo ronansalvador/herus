@@ -18,6 +18,7 @@ interface Item {
 export default function ItemList() {
   const [items, setItems] = useState<Item[]>([])
   const [searchTerm, setSearchTerm] = useState<string>('')
+  const [loading, setLoading] = useState<boolean>(false) // Novo estado para loading
 
   // Estados para controlar a edição
   const [editingItemId, setEditingItemId] = useState<number | null>(null)
@@ -27,12 +28,15 @@ export default function ItemList() {
 
   useEffect(() => {
     const fetchItems = async () => {
+      setLoading(true) // Inicia o loading
       try {
         const response = await axios.get('/api/item')
         setItems(response.data)
       } catch (error) {
         console.error(error)
         toast.error('Erro ao carregar itens.')
+      } finally {
+        setLoading(false) // Finaliza o loading
       }
     }
     fetchItems()
@@ -140,86 +144,90 @@ export default function ItemList() {
           Exportar Excel
         </button>
       </div>
-      <table id="table-to-pdf" className={styles.table}>
-        <thead>
-          <tr>
-            <th>Nome</th>
-            <th>Quantidade</th>
-            <th>Preço</th> {/* Novo campo */}
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredItems.map((item) => (
-            <tr key={item.id}>
-              <td>
-                {editingItemId === item.id ? (
-                  <input
-                    type="text"
-                    value={editName}
-                    onChange={(e) => setEditName(e.target.value)}
-                    className={styles.editInput}
-                  />
-                ) : (
-                  item.name
-                )}
-              </td>
-              <td>
-                {editingItemId === item.id ? (
-                  <input
-                    type="number"
-                    value={editQuantity}
-                    onChange={(e) => setEditQuantity(Number(e.target.value))}
-                    className={styles.editInput}
-                  />
-                ) : (
-                  item.quantity
-                )}
-              </td>
-              <td>
-                {editingItemId === item.id ? (
-                  <input
-                    type="number"
-                    value={editPrice}
-                    onChange={(e) => setEditPrice(Number(e.target.value))}
-                    className={styles.editInput}
-                  />
-                ) : (
-                  new Intl.NumberFormat('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL',
-                  }).format(item.price)
-                )}
-              </td>
-              <td className={styles.tdButtons}>
-                {editingItemId === item.id ? (
-                  <button
-                    onClick={handleUpdate}
-                    className={`${styles.button} ${styles.excelButton}`}
-                  >
-                    Salvar
-                  </button>
-                ) : (
-                  <>
-                    <button
-                      onClick={() => handleEdit(item)}
-                      className={`${styles.button} ${styles.editButton}`}
-                    >
-                      Editar
-                    </button>
-                    <button
-                      onClick={() => handleDelete(item.id)}
-                      className={`${styles.button} ${styles.deleteButton}`}
-                    >
-                      Excluir
-                    </button>
-                  </>
-                )}
-              </td>
+      {loading ? ( // Exibe mensagem de loading
+        <p>Carregando itens...</p>
+      ) : (
+        <table id="table-to-pdf" className={styles.table}>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Quantidade</th>
+              <th>Preço</th> {/* Novo campo */}
+              <th>Ações</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filteredItems.map((item) => (
+              <tr key={item.id}>
+                <td>
+                  {editingItemId === item.id ? (
+                    <input
+                      type="text"
+                      value={editName}
+                      onChange={(e) => setEditName(e.target.value)}
+                      className={styles.editInput}
+                    />
+                  ) : (
+                    item.name
+                  )}
+                </td>
+                <td>
+                  {editingItemId === item.id ? (
+                    <input
+                      type="number"
+                      value={editQuantity}
+                      onChange={(e) => setEditQuantity(Number(e.target.value))}
+                      className={styles.editInput}
+                    />
+                  ) : (
+                    item.quantity
+                  )}
+                </td>
+                <td>
+                  {editingItemId === item.id ? (
+                    <input
+                      type="number"
+                      value={editPrice}
+                      onChange={(e) => setEditPrice(Number(e.target.value))}
+                      className={styles.editInput}
+                    />
+                  ) : (
+                    new Intl.NumberFormat('pt-BR', {
+                      style: 'currency',
+                      currency: 'BRL',
+                    }).format(item.price)
+                  )}
+                </td>
+                <td className={styles.tdButtons}>
+                  {editingItemId === item.id ? (
+                    <button
+                      onClick={handleUpdate}
+                      className={`${styles.button} ${styles.excelButton}`}
+                    >
+                      Salvar
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => handleEdit(item)}
+                        className={`${styles.button} ${styles.editButton}`}
+                      >
+                        Editar
+                      </button>
+                      <button
+                        onClick={() => handleDelete(item.id)}
+                        className={`${styles.button} ${styles.deleteButton}`}
+                      >
+                        Excluir
+                      </button>
+                    </>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
       <ToastContainer />
     </div>
   )

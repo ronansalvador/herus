@@ -25,7 +25,7 @@ export default function StockChange() {
   const [selectedServiceId, setSelectedServiceId] = useState<
     number | undefined
   >(undefined)
-  const [change, setChange] = useState(0)
+  const [change, setChange] = useState('')
   const [itemSearchTerm, setItemSearchTerm] = useState<string>('')
   const [serviceSearchTerm, setServiceSearchTerm] = useState<string>('')
   const [isEntry, setIsEntry] = useState<boolean>(true) // Estado para determinar se é entrada ou saída
@@ -65,7 +65,7 @@ export default function StockChange() {
       })
       toast.success('Estoque atualizado com sucesso!')
       console.log(response)
-      setChange(0)
+      setChange('')
       setSelectedServiceId(undefined)
     } catch (error) {
       console.log(error)
@@ -141,6 +141,21 @@ export default function StockChange() {
           </select>
         </div>
 
+        {/* Input para mudança de quantidade */}
+        <div>
+          <label htmlFor="change" className={styles.label}>
+            Mudança de Quantidade
+          </label>
+          <input
+            id="change"
+            type="number"
+            value={change}
+            onChange={(e) => setChange(e.target.value)}
+            className={styles.input}
+            required
+          />
+        </div>
+
         {/* Campo de busca para serviços */}
         {!isEntry && (
           <div>
@@ -179,21 +194,6 @@ export default function StockChange() {
             </select>
           </div>
         )}
-
-        {/* Input para mudança de quantidade */}
-        <div>
-          <label htmlFor="change" className={styles.label}>
-            Mudança de Quantidade
-          </label>
-          <input
-            id="change"
-            type="number"
-            value={change}
-            onChange={(e) => setChange(Number(e.target.value))}
-            className={styles.input}
-            required
-          />
-        </div>
         <button type="submit" className={styles.button}>
           Atualizar Estoque
         </button>

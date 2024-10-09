@@ -30,15 +30,19 @@ interface Servico {
 export default function ServiceMovements() {
   const [servicos, setServicos] = useState<Servico[]>([])
   const [searchTerm, setSearchTerm] = useState<string>('')
+  const [loading, setLoading] = useState<boolean>(false) // Estado de loading
 
   useEffect(() => {
     const fetchServicos = async () => {
+      setLoading(true) // Inicia o loading
       try {
         const response = await axios.get('/api/servico')
         setServicos(response.data)
       } catch (error) {
         console.log(error)
         toast.error('Erro ao carregar serviços.')
+      } finally {
+        setLoading(false) // Finaliza o loading
       }
     }
 
@@ -133,30 +137,36 @@ export default function ServiceMovements() {
           Exportar Excel
         </button>
       </div>
-      <table id="table-to-pdf" className={styles.table}>
-        <thead>
-          <tr>
-            <th>Serviço</th>
-            <th>Item</th>
-            <th>Quantidade</th>
-          </tr>
-        </thead>
-        <tbody>
-          {groupedMovimentacoes.map((movimentacao, index) =>
-            movimentacao.items.map((item, subIndex) => (
-              <tr key={`${index}-${subIndex}`}>
-                {subIndex === 0 && (
-                  <td rowSpan={movimentacao.items.length}>
-                    {movimentacao.servico}
-                  </td>
-                )}
-                <td>{item.item}</td>
-                <td>{item.quantidade}</td>
-              </tr>
-            )),
-          )}
-        </tbody>
-      </table>
+
+      {/* Exibe uma mensagem de loading enquanto os dados estão sendo carregados */}
+      {loading ? (
+        <div className={styles.loading}>Carregando serviços...</div>
+      ) : (
+        <table id="table-to-pdf" className={styles.table}>
+          <thead>
+            <tr>
+              <th>Serviço</th>
+              <th>Item</th>
+              <th>Quantidade</th>
+            </tr>
+          </thead>
+          <tbody>
+            {groupedMovimentacoes.map((movimentacao, index) =>
+              movimentacao.items.map((item, subIndex) => (
+                <tr key={`${index}-${subIndex}`}>
+                  {subIndex === 0 && (
+                    <td rowSpan={movimentacao.items.length}>
+                      {movimentacao.servico}
+                    </td>
+                  )}
+                  <td>{item.item}</td>
+                  <td>{item.quantidade}</td>
+                </tr>
+              )),
+            )}
+          </tbody>
+        </table>
+      )}
       <ToastContainer />
     </div>
   )

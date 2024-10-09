@@ -38,10 +38,12 @@ export default function ClienteMovements({ params }: Props) {
   const [movimentacoes, setMovimentacoes] = useState<Movimentacao[]>([])
   const [servico, setServico] = useState<Servico | null>(null)
   const [itens, setItens] = useState<Item[]>([])
+  const [loading, setLoading] = useState<boolean>(true) // Estado de loading
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true) // Iniciar loading
         const [servicoResponse, itensResponse] = await Promise.all([
           axios.get(`/api/servico/${id}`),
           axios.get('/api/item'),
@@ -52,6 +54,8 @@ export default function ClienteMovements({ params }: Props) {
       } catch (error) {
         console.error(error)
         toast.error('Erro ao carregar dados.')
+      } finally {
+        setLoading(false) // Finalizar loading
       }
     }
 
@@ -121,51 +125,61 @@ export default function ClienteMovements({ params }: Props) {
       <h1 className={styles.title}>
         Movimentações de Materiais: {servico?.cliente}
       </h1>
-      <div className={styles.buttonGroup}>
-        <button
-          onClick={exportPDF}
-          className={`${styles.button} ${styles.pdfButton}`}
-        >
-          Gerar PDF
-        </button>
-        <button
-          onClick={exportExcel}
-          className={`${styles.button} ${styles.excelButton}`}
-        >
-          Exportar Excel
-        </button>
-      </div>
-      <table id="table-to-pdf" className={styles.table}>
-        <thead>
-          <tr>
-            <th>Item</th>
-            <th>Quantidade</th>
-            <th>Preço (R$)</th>
-            <th>Total (R$)</th>
-          </tr>
-        </thead>
-        <tbody>
-          {groupedMovimentacoes.map((movimentacao, index) => {
-            const item = itens.find((i) => i.id === movimentacao.itemId)
-            const totalItem = item ? item.price * movimentacao.quantidade : 0
-            return (
-              <tr key={index}>
-                <td>{item ? item.name : 'Item não encontrado'}</td>
-                <td>{movimentacao.quantidade}</td>
-                <td>{item ? item.price.toFixed(2) : 'Preço não encontrado'}</td>
-                <td>{totalItem.toFixed(2)}</td>
+      {loading ? (
+        <div className={styles.loading}>Carregando...</div> // Indicador de loading
+      ) : (
+        <>
+          <div className={styles.buttonGroup}>
+            <button
+              onClick={exportPDF}
+              className={`${styles.button} ${styles.pdfButton}`}
+            >
+              Gerar PDF
+            </button>
+            <button
+              onClick={exportExcel}
+              className={`${styles.button} ${styles.excelButton}`}
+            >
+              Exportar Excel
+            </button>
+          </div>
+          <table id="table-to-pdf" className={styles.table}>
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Quantidade</th>
+                <th>Preço (R$)</th>
+                <th>Total (R$)</th>
               </tr>
-            )
-          })}
-          {/* Linha do total gasto */}
-          <tr>
-            <td colSpan={3} style={{ fontWeight: 'bold' }}>
-              Total Gasto:
-            </td>
-            <td style={{ fontWeight: 'bold' }}>{totalGasto.toFixed(2)}</td>
-          </tr>
-        </tbody>
-      </table>
+            </thead>
+            <tbody>
+              {groupedMovimentacoes.map((movimentacao, index) => {
+                const item = itens.find((i) => i.id === movimentacao.itemId)
+                const totalItem = item
+                  ? item.price * movimentacao.quantidade
+                  : 0
+                return (
+                  <tr key={index}>
+                    <td>{item ? item.name : 'Item não encontrado'}</td>
+                    <td>{movimentacao.quantidade}</td>
+                    <td>
+                      {item ? item.price.toFixed(2) : 'Preço não encontrado'}
+                    </td>
+                    <td>{totalItem.toFixed(2)}</td>
+                  </tr>
+                )
+              })}
+              {/* Linha do total gasto */}
+              <tr>
+                <td colSpan={3} style={{ fontWeight: 'bold' }}>
+                  Total Gasto:
+                </td>
+                <td style={{ fontWeight: 'bold' }}>{totalGasto.toFixed(2)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </>
+      )}
       <ToastContainer />
     </div>
   )

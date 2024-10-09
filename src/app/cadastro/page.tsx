@@ -16,23 +16,29 @@ export default function ServiceForm() {
   const [cliente, setCliente] = useState<string>('')
   const [services, setServices] = useState<Servico[]>([])
   const [filter, setFilter] = useState<string>('')
+  const [loading, setLoading] = useState<boolean>(false) // Estado de carregamento
   const router = useRouter() // Hook do Next.js para redirecionar
 
-  useEffect(() => {
-    const fetchServices = async () => {
-      try {
-        const response = await axios.get('/api/servico')
-        setServices(response.data)
-      } catch (error) {
-        console.log(error)
-        toast.error('Erro ao carregar serviços.')
-      }
+  const fetchServices = async () => {
+    setLoading(true) // Começa a carregar
+    try {
+      const response = await axios.get('/api/servico')
+      setServices(response.data)
+    } catch (error) {
+      console.log(error)
+      toast.error('Erro ao carregar serviços.')
+    } finally {
+      setLoading(false) // Termina de carregar
     }
+  }
+
+  useEffect(() => {
     fetchServices()
   }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setLoading(true) // Começa a carregar
     try {
       if (serviceId) {
         await axios.put(`/api/servico/${serviceId}`, { cliente })
@@ -43,11 +49,12 @@ export default function ServiceForm() {
       }
       setCliente('')
       setServiceId(undefined)
-      const response = await axios.get('/api/servico')
-      setServices(response.data)
+      await fetchServices() // Recarrega a lista de serviços
     } catch (error) {
       console.log(error)
       toast.error('Erro ao criar/atualizar serviço.')
+    } finally {
+      setLoading(false) // Termina de carregar
     }
   }
 
@@ -87,7 +94,6 @@ export default function ServiceForm() {
       <h1 className={styles.title}>
         {serviceId ? 'Atualizar Serviço' : 'Criar Serviço'}
       </h1>
-
       <form onSubmit={handleSubmit}>
         <div>
           <label htmlFor="cliente" className={styles.label}>
@@ -112,7 +118,6 @@ export default function ServiceForm() {
           </button>
         </div>
       </form>
-
       <div className={styles.filterContainer}>
         <label htmlFor="filter" className={styles.label}>
           Filtrar por nome do cliente
@@ -125,42 +130,45 @@ export default function ServiceForm() {
           className={styles.searchInput}
         />
       </div>
-
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th>Nome do Cliente</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredServices.map((service) => (
-            <tr key={service.id}>
-              <td>{service.cliente}</td>
-              <td className={styles.tdButtons}>
-                <button
-                  onClick={() => handleSelectService(service.id)}
-                  className={styles.editButton}
-                >
-                  Editar
-                </button>
-                <button
-                  onClick={() => handleDelete(service.id)}
-                  className={styles.deleteButton}
-                >
-                  Excluir
-                </button>
-                <button
-                  onClick={() => handleViewMaterials(service.id)}
-                  className={styles.viewButton}
-                >
-                  Lista de Material
-                </button>
-              </td>
+      {loading ? (
+        <p>Carregando...</p>
+      ) : (
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>Nome do Cliente</th>
+              <th>Ações</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filteredServices.map((service) => (
+              <tr key={service.id}>
+                <td>{service.cliente}</td>
+                <td className={styles.tdButtons}>
+                  <button
+                    onClick={() => handleSelectService(service.id)}
+                    className={styles.editButton}
+                  >
+                    Editar
+                  </button>
+                  <button
+                    onClick={() => handleDelete(service.id)}
+                    className={styles.deleteButton}
+                  >
+                    Excluir
+                  </button>
+                  <button
+                    onClick={() => handleViewMaterials(service.id)}
+                    className={styles.viewButton}
+                  >
+                    Lista de Material
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
 
       <ToastContainer />
     </div>
