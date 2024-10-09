@@ -58,44 +58,47 @@
   justify-content: space-evenly;
 }
 
-.editButton {
-  color: white;
-  background-color: #0056b3;
-  padding: 0.5rem;
-  cursor: pointer;
-  border: none;
-  border-radius: 4px;
-}
-
-.editButton:hover {
-  color: #0056b3;
-  background-color: white;
-}
-
 .deleteButton {
-  color: white;
-  background-color: red;
+  color: red;
+  background-color: transparent;
+  border: 1px solid red;
   padding: 0.5rem;
   cursor: pointer;
-  border: none;
   border-radius: 4px;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .deleteButton:hover {
-  color: red;
-  background-color: white;
+  color: white;
+  background-color: red;
 }
 
-.viewButton {
-  color: white;
-  background-color: #28a745;
+.editButton {
+  color: #0056b3;
+  background-color: transparent;
+  border: 1px solid #0056b3;
   padding: 0.5rem;
   cursor: pointer;
-  border: none;
+
   border-radius: 4px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.editButton:hover {
+  color: white;
+  background-color: #0056b3;
+}
+.viewButton {
+  color: #28a745;
+  background-color: transparent;
+  padding: 0.5rem;
+  cursor: pointer;
+  border: 1px solid #28a745;
+  border-radius: 4px;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .viewButton:hover {
-  color: #28a745;
-  background-color: white;
+  color: white;
+  background-color: #28a745;
 }
