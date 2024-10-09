@@ -19,7 +19,11 @@ interface UpdateItem {
 // GET: Listar todos os itens
 export async function GET() {
   try {
-    const items = await prisma.item.findMany()
+    const items = await prisma.item.findMany({
+      orderBy: {
+        id: 'asc', // ou 'desc' se você quiser ordem decrescente
+      },
+    })
     return NextResponse.json(items)
   } catch (error) {
     return NextResponse.json(
