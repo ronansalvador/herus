@@ -108,7 +108,8 @@ export default function ItemList() {
   }
 
   const exportExcel = () => {
-    const dataToExport = filteredItems.map(({ id, ...rest }) => rest)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const dataToExport = filteredItems.map(({ id, ...rest }) => rest) // Remover `id` da desestruturação
     const worksheet = XLSX.utils.json_to_sheet(dataToExport)
     const workbook = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Itens')
@@ -194,7 +195,7 @@ export default function ItemList() {
                 {editingItemId === item.id ? (
                   <button
                     onClick={handleUpdate}
-                    className={`${styles.button} ${styles.saveButton}`}
+                    className={`${styles.button} ${styles.excelButton}`}
                   >
                     Salvar
                   </button>
