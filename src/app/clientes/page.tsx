@@ -54,26 +54,6 @@ export default function ServiceMovements() {
     servico.cliente.toLowerCase().includes(searchTerm.toLowerCase()),
   )
 
-  // Agrupar itens por serviço e somar quantidades
-  const groupedMovimentacoes = filteredServicos.map((servico) => {
-    const itemMap = servico.changes.reduce((acc, change) => {
-      const itemName = change.item.name
-      if (!acc[itemName]) {
-        acc[itemName] = {
-          item: itemName,
-          quantidade: 0,
-        }
-      }
-      acc[itemName].quantidade += Math.abs(change.change) // Somando os itens, removendo o negativo
-      return acc
-    }, {} as Record<string, { item: string; quantidade: number }>)
-
-    return {
-      servico: servico.cliente,
-      items: Object.values(itemMap), // Transformando o objeto de itens agrupados em array
-    }
-  })
-
   // Função para exportar PDF
   const exportPDF = () => {
     const input = document.getElementById('table-to-pdf')
@@ -93,11 +73,11 @@ export default function ServiceMovements() {
 
   // Função para exportar Excel
   const exportExcel = () => {
-    const dataToExport = groupedMovimentacoes.flatMap((movimentacao) =>
-      movimentacao.items.map((item) => ({
-        Servico: movimentacao.servico,
-        Item: item.item,
-        Quantidade: item.quantidade,
+    const dataToExport = filteredServicos.flatMap((servico) =>
+      servico.changes.map((change) => ({
+        Servico: servico.cliente,
+        Item: change.item.name,
+        Quantidade: Math.abs(change.change), // Removendo o negativo
       })),
     )
 
@@ -151,16 +131,14 @@ export default function ServiceMovements() {
             </tr>
           </thead>
           <tbody>
-            {groupedMovimentacoes.map((movimentacao, index) =>
-              movimentacao.items.map((item, subIndex) => (
+            {filteredServicos.map((servico, index) =>
+              servico.changes.map((change, subIndex) => (
                 <tr key={`${index}-${subIndex}`}>
                   {subIndex === 0 && (
-                    <td rowSpan={movimentacao.items.length}>
-                      {movimentacao.servico}
-                    </td>
+                    <td rowSpan={servico.changes.length}>{servico.cliente}</td>
                   )}
-                  <td>{item.item}</td>
-                  <td>{item.quantidade}</td>
+                  <td>{change.item.name}</td>
+                  <td>{Math.abs(change.change)}</td>
                 </tr>
               )),
             )}
