@@ -4,7 +4,7 @@ import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import jsPDF from 'jspdf'
-import html2canvas from 'html2canvas'
+import 'jspdf-autotable'
 import * as XLSX from 'xlsx'
 import styles from './style.module.css'
 
@@ -95,20 +95,52 @@ export default function ItemList() {
     item.name.toLowerCase().includes(searchTerm.toLowerCase()),
   )
 
+  // const exportPDF = () => {
+  //   const input = document.getElementById('table-to-pdf')
+  //   if (input) {
+  //     html2canvas(input).then((canvas) => {
+  //       const imgData = canvas.toDataURL('image/png')
+  //       const pdf = new jsPDF()
+
+  //       const imgWidth = pdf.internal.pageSize.getWidth()
+  //       const imgHeight = (canvas.height * imgWidth) / canvas.width
+
+  //       pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight)
+  //       pdf.save('items.pdf')
+  //     })
+  //   }
+  // }
+
   const exportPDF = () => {
-    const input = document.getElementById('table-to-pdf')
-    if (input) {
-      html2canvas(input).then((canvas) => {
-        const imgData = canvas.toDataURL('image/png')
-        const pdf = new jsPDF()
+    const doc = new jsPDF()
 
-        const imgWidth = pdf.internal.pageSize.getWidth()
-        const imgHeight = (canvas.height * imgWidth) / canvas.width
+    const tableColumnHeaders = ['Nome', 'Quantidade', 'Preço'] // Definindo os cabeçalhos das colunas
+    const tableRows: unknown[] = []
 
-        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight)
-        pdf.save('items.pdf')
-      })
-    }
+    filteredItems.forEach((item) => {
+      const rowData = [
+        item.name,
+        item.quantity,
+        new Intl.NumberFormat('pt-BR', {
+          style: 'currency',
+          currency: 'BRL',
+        }).format(item.price),
+      ]
+      tableRows.push(rowData)
+    })
+
+    doc.autoTable({
+      head: [tableColumnHeaders],
+      body: tableRows,
+      theme: 'grid',
+      styles: { fontSize: 10 },
+      margin: { top: 20 },
+      didDrawPage: (data: { settings: { margin: { left: number } } }) => {
+        doc.text('Lista de Itens', data.settings.margin.left, 10)
+      },
+    })
+
+    doc.save('items.pdf')
   }
 
   const exportExcel = () => {
