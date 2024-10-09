@@ -47,8 +47,10 @@ export async function POST(req: Request) {
         price: price || 0.0, // Valor padrão para price
       },
     })
+    console.log(newItem)
     return NextResponse.json({ newItem })
   } catch (error) {
+    console.log(error)
     return NextResponse.json(
       {
         message: 'error',

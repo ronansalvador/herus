@@ -25,7 +25,7 @@ export default function StockChange() {
   const [selectedServiceId, setSelectedServiceId] = useState<
     number | undefined
   >(undefined)
-  const [change, setChange] = useState('')
+  const [change, setChange] = useState('') // Inicializa como string vazia
   const [itemSearchTerm, setItemSearchTerm] = useState<string>('')
   const [serviceSearchTerm, setServiceSearchTerm] = useState<string>('')
   const [isEntry, setIsEntry] = useState<boolean>(true) // Estado para determinar se é entrada ou saída
@@ -61,11 +61,11 @@ export default function StockChange() {
       const response = await axios.post('/api/estoque', {
         itemId: selectedItemId,
         servicoId: isEntry ? undefined : selectedServiceId, // Vincula o serviço apenas se não for entrada
-        change: isEntry ? change : -change, // Altera o sinal da quantidade
+        change: isEntry ? Number(change) : -Number(change), // Converte para número no envio
       })
       toast.success('Estoque atualizado com sucesso!')
       console.log(response)
-      setChange('')
+      setChange('') // Resetando o campo change após sucesso
       setSelectedServiceId(undefined)
     } catch (error) {
       console.log(error)
@@ -150,7 +150,7 @@ export default function StockChange() {
             id="change"
             type="number"
             value={change}
-            onChange={(e) => setChange(e.target.value)}
+            onChange={(e) => setChange(e.target.value)} // Mantenha como string
             className={styles.input}
             required
           />

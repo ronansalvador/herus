@@ -7,17 +7,21 @@ import styles from './style.module.css'
 
 export default function CreateItem() {
   const [name, setName] = useState('')
-  const [quantity, setQuantity] = useState('')
-  const [price, setPrice] = useState('') // Adicionando o estado do campo price
+  const [quantity, setQuantity] = useState('') // Mantenha como string
+  const [price, setPrice] = useState('') // Mantenha como string
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      const response = await axios.post('/api/item', { name, quantity, price }) // Enviando o price
+      const response = await axios.post('/api/item', {
+        name,
+        quantity: Number(quantity), // Converta para número ao enviar
+        price: Number(price), // Converta para número ao enviar
+      })
       console.log(response)
       toast.success('Item criado com sucesso!')
       setName('')
-      setQuantity('')
+      setQuantity('') // Resetando o campo quantity após sucesso
       setPrice('') // Resetando o campo price após sucesso
     } catch (error) {
       toast.error('Erro ao criar item.')
@@ -49,7 +53,7 @@ export default function CreateItem() {
             id="quantity"
             type="number"
             value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
+            onChange={(e) => setQuantity(e.target.value)} // Mantenha como string
             className={styles.input}
             required
           />
@@ -62,7 +66,7 @@ export default function CreateItem() {
             id="price"
             type="number"
             value={price}
-            onChange={(e) => setPrice(e.target.value)}
+            onChange={(e) => setPrice(e.target.value)} // Mantenha como string
             className={styles.input}
             required
           />
