@@ -24,6 +24,7 @@ model Item {
   id       Int           @id @default(autoincrement())
   name     String        @unique
   quantity Int           @default(0)
+  price    Float         @default(0.0)
   history  StockChange[]
 }
 

@@ -78,7 +78,6 @@ export async function DELETE(req: Request) {
     const deletedStockChange = await prisma.stockChange.delete({
       where: { id: Number(id) },
     })
-    console.log('stockChange deletado', deletedStockChange)
     return NextResponse.json({ deletedStockChange })
   } catch (error) {
     return NextResponse.json(
@@ -93,7 +92,6 @@ export async function DELETE(req: Request) {
 
 // PUT: Atualizar completamente uma mudança de estoque
 export async function PUT(req: Request) {
-  console.log('PUT passou aqui')
   try {
     const { id, change, servicoId }: UpdateStockChange = await req.json()
     const updatedStockChange = await prisma.stockChange.update({
@@ -103,7 +101,6 @@ export async function PUT(req: Request) {
         servicoId, // Atualiza o campo servicoId, se fornecido
       },
     })
-    console.log('stockChange atualizado', updatedStockChange)
     return NextResponse.json({ updatedStockChange })
   } catch (error) {
     return NextResponse.json(
@@ -118,7 +115,6 @@ export async function PUT(req: Request) {
 
 // PATCH: Atualizar parcialmente uma mudança de estoque
 export async function PATCH(req: Request) {
-  console.log('PATCH passou aqui')
   try {
     const { id, change, servicoId }: UpdateStockChange = await req.json()
     const updateData: Partial<StockChangeCreate> = {}
@@ -134,7 +130,6 @@ export async function PATCH(req: Request) {
       where: { id: Number(id) },
       data: updateData,
     })
-    console.log('stockChange atualizado', updatedStockChange)
     return NextResponse.json({ updatedStockChange })
   } catch (error) {
     return NextResponse.json(

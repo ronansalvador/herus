@@ -24,6 +24,7 @@ interface Servico {
 interface Item {
   id: number
   name: string
+  price: number // Adicionando o campo price
 }
 
 interface Props {
@@ -75,6 +76,12 @@ export default function ClienteMovements({ params }: Props) {
     return acc
   }, [] as { itemId: number; quantidade: number }[])
 
+  // Calculando o total gasto
+  const totalGasto = groupedMovimentacoes.reduce((total, movimentacao) => {
+    const item = itens.find((i) => i.id === movimentacao.itemId)
+    return total + (item ? item.price * movimentacao.quantidade : 0)
+  }, 0)
+
   // Função para exportar PDF
   const exportPDF = () => {
     const input = document.getElementById('table-to-pdf')
@@ -99,6 +106,7 @@ export default function ClienteMovements({ params }: Props) {
       return {
         Item: item ? item.name : 'Item não encontrado',
         Quantidade: movimentacao.quantidade,
+        Preço: item ? item.price.toFixed(2) : 'Preço não encontrado', // Exibindo o preço no Excel
       }
     })
 
@@ -132,18 +140,30 @@ export default function ClienteMovements({ params }: Props) {
           <tr>
             <th>Item</th>
             <th>Quantidade</th>
+            <th>Preço (R$)</th>
+            <th>Total (R$)</th>
           </tr>
         </thead>
         <tbody>
           {groupedMovimentacoes.map((movimentacao, index) => {
             const item = itens.find((i) => i.id === movimentacao.itemId)
+            const totalItem = item ? item.price * movimentacao.quantidade : 0
             return (
               <tr key={index}>
                 <td>{item ? item.name : 'Item não encontrado'}</td>
                 <td>{movimentacao.quantidade}</td>
+                <td>{item ? item.price.toFixed(2) : 'Preço não encontrado'}</td>
+                <td>{totalItem.toFixed(2)}</td>
               </tr>
             )
           })}
+          {/* Linha do total gasto */}
+          <tr>
+            <td colSpan={3} style={{ fontWeight: 'bold' }}>
+              Total Gasto:
+            </td>
+            <td style={{ fontWeight: 'bold' }}>{totalGasto.toFixed(2)}</td>
+          </tr>
         </tbody>
       </table>
       <ToastContainer />

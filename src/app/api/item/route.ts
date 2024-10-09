@@ -5,6 +5,7 @@ import { NextResponse } from 'next/server'
 interface ItemCreate {
   name: string
   quantity?: number
+  price?: number // Adicionando o campo price
 }
 
 // Interface para atualizar um Item
@@ -12,13 +13,13 @@ interface UpdateItem {
   id: number
   name?: string
   quantity?: number
+  price?: number // Adicionando o campo price
 }
 
 // GET: Listar todos os itens
 export async function GET() {
   try {
     const items = await prisma.item.findMany()
-    console.log(items)
     return NextResponse.json(items)
   } catch (error) {
     return NextResponse.json(
@@ -33,16 +34,15 @@ export async function GET() {
 
 // POST: Criar um novo Item
 export async function POST(req: Request) {
-  console.log('POST passou aqui')
   try {
-    const { name, quantity }: ItemCreate = await req.json()
+    const { name, quantity, price }: ItemCreate = await req.json()
     const newItem = await prisma.item.create({
       data: {
         name,
         quantity: quantity || 0, // Valor padrão se não for passado
+        price: price || 0.0, // Valor padrão para price
       },
     })
-    console.log('newItem', newItem)
     return NextResponse.json({ newItem })
   } catch (error) {
     return NextResponse.json(
@@ -57,13 +57,11 @@ export async function POST(req: Request) {
 
 // DELETE: Deletar um item pelo id
 export async function DELETE(req: Request) {
-  console.log('DELETE passou aqui')
   try {
     const { id }: { id: number } = await req.json()
     const deletedItem = await prisma.item.delete({
       where: { id: Number(id) },
     })
-    console.log('item deletado', deletedItem)
     return NextResponse.json({ deletedItem })
   } catch (error) {
     return NextResponse.json(
@@ -78,17 +76,16 @@ export async function DELETE(req: Request) {
 
 // PUT: Atualizar um item (atualiza todos os campos)
 export async function PUT(req: Request) {
-  console.log('PUT passou aqui')
   try {
-    const { id, name, quantity }: UpdateItem = await req.json()
+    const { id, name, quantity, price }: UpdateItem = await req.json()
     const updatedItem = await prisma.item.update({
       where: { id: Number(id) },
       data: {
         name,
         quantity,
+        price,
       },
     })
-    console.log('item atualizado', updatedItem)
     return NextResponse.json({ updatedItem })
   } catch (error) {
     return NextResponse.json(
@@ -101,11 +98,10 @@ export async function PUT(req: Request) {
   }
 }
 
-// PATCH: Atualizar um item parcialmente
+/// PATCH: Atualizar um item parcialmente
 export async function PATCH(req: Request) {
-  console.log('PATCH passou aqui')
   try {
-    const { id, name, quantity }: UpdateItem = await req.json()
+    const { id, name, quantity, price }: UpdateItem = await req.json()
     const updateData: Partial<ItemCreate> = {}
 
     if (name !== undefined) {
@@ -114,12 +110,14 @@ export async function PATCH(req: Request) {
     if (quantity !== undefined) {
       updateData.quantity = quantity
     }
+    if (price !== undefined) {
+      updateData.price = price
+    }
 
     const updatedItem = await prisma.item.update({
       where: { id: Number(id) },
       data: updateData,
     })
-    console.log('item atualizado', updatedItem)
     return NextResponse.json({ updatedItem })
   } catch (error) {
     return NextResponse.json(

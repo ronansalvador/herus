@@ -12,6 +12,7 @@ interface Item {
   id: number
   name: string
   quantity: number
+  price: number // Adicionando o campo price
 }
 
 export default function ItemList() {
@@ -22,6 +23,7 @@ export default function ItemList() {
   const [editingItemId, setEditingItemId] = useState<number | null>(null)
   const [editName, setEditName] = useState<string>('')
   const [editQuantity, setEditQuantity] = useState<number>(0)
+  const [editPrice, setEditPrice] = useState<number>(0) // Novo estado para price
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -51,6 +53,7 @@ export default function ItemList() {
     setEditingItemId(item.id)
     setEditName(item.name)
     setEditQuantity(item.quantity)
+    setEditPrice(item.price) // Adicionando price
   }
 
   const handleUpdate = async () => {
@@ -59,11 +62,17 @@ export default function ItemList() {
         id: editingItemId,
         name: editName,
         quantity: editQuantity,
+        price: editPrice, // Enviando o price
       })
       setItems(
         items.map((item) =>
           item.id === editingItemId
-            ? { ...item, name: editName, quantity: editQuantity }
+            ? {
+                ...item,
+                name: editName,
+                quantity: editQuantity,
+                price: editPrice,
+              }
             : item,
         ),
       )
@@ -71,6 +80,7 @@ export default function ItemList() {
       setEditingItemId(null)
       setEditName('')
       setEditQuantity(0)
+      setEditPrice(0) // Resetando o campo price após atualização
     } catch (error) {
       toast.error('Erro ao atualizar item.')
       console.error(error)
@@ -98,7 +108,6 @@ export default function ItemList() {
   }
 
   const exportExcel = () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const dataToExport = filteredItems.map(({ id, ...rest }) => rest)
     const worksheet = XLSX.utils.json_to_sheet(dataToExport)
     const workbook = XLSX.utils.book_new()
@@ -135,6 +144,7 @@ export default function ItemList() {
           <tr>
             <th>Nome</th>
             <th>Quantidade</th>
+            <th>Preço</th> {/* Novo campo */}
             <th>Ações</th>
           </tr>
         </thead>
@@ -165,27 +175,42 @@ export default function ItemList() {
                   item.quantity
                 )}
               </td>
+              <td>
+                {editingItemId === item.id ? (
+                  <input
+                    type="number"
+                    value={editPrice}
+                    onChange={(e) => setEditPrice(Number(e.target.value))}
+                    className={styles.editInput}
+                  />
+                ) : (
+                  new Intl.NumberFormat('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL',
+                  }).format(item.price)
+                )}
+              </td>
               <td className={styles.tdButtons}>
                 {editingItemId === item.id ? (
                   <button
                     onClick={handleUpdate}
-                    className={styles.updateButton}
+                    className={`${styles.button} ${styles.saveButton}`}
                   >
-                    Atualizar
+                    Salvar
                   </button>
                 ) : (
                   <>
                     <button
                       onClick={() => handleEdit(item)}
-                      className={styles.editButton}
+                      className={`${styles.button} ${styles.editButton}`}
                     >
                       Editar
                     </button>
                     <button
                       onClick={() => handleDelete(item.id)}
-                      className={styles.deleteButton}
+                      className={`${styles.button} ${styles.deleteButton}`}
                     >
-                      Deletar
+                      Excluir
                     </button>
                   </>
                 )}

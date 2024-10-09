@@ -24,7 +24,6 @@ export async function GET() {
         },
       },
     })
-    console.log(servicos)
     return NextResponse.json(servicos)
   } catch (error) {
     return NextResponse.json(
@@ -39,7 +38,6 @@ export async function GET() {
 
 // POST: Criar um novo serviço
 export async function POST(req: Request) {
-  console.log('POST passou aqui')
   try {
     const { cliente }: ServicoCreate = await req.json()
     const newServico = await prisma.servico.create({
@@ -48,7 +46,6 @@ export async function POST(req: Request) {
       },
     })
 
-    console.log('newServico', newServico)
     return NextResponse.json({ newServico })
   } catch (error) {
     return NextResponse.json(
@@ -63,13 +60,11 @@ export async function POST(req: Request) {
 
 // DELETE: Deletar um serviço pelo id
 export async function DELETE(req: Request) {
-  console.log('DELETE passou aqui')
   try {
     const { id }: { id: number } = await req.json()
     const deletedServico = await prisma.servico.delete({
       where: { id: Number(id) },
     })
-    console.log('Servico deletado', deletedServico)
     return NextResponse.json({ deletedServico })
   } catch (error) {
     return NextResponse.json(
@@ -84,7 +79,6 @@ export async function DELETE(req: Request) {
 
 // PUT: Atualizar completamente um serviço
 export async function PUT(req: Request) {
-  console.log('PUT passou aqui')
   try {
     const { id, cliente }: UpdateServico = await req.json()
     const updatedServico = await prisma.servico.update({
@@ -93,7 +87,6 @@ export async function PUT(req: Request) {
         cliente,
       },
     })
-    console.log('Servico atualizado', updatedServico)
     return NextResponse.json({ updatedServico })
   } catch (error) {
     return NextResponse.json(
@@ -108,7 +101,6 @@ export async function PUT(req: Request) {
 
 // PATCH: Atualizar parcialmente um serviço
 export async function PATCH(req: Request) {
-  console.log('PATCH passou aqui')
   try {
     const { id, cliente }: UpdateServico = await req.json()
     const updateData: Partial<ServicoCreate> = {}
@@ -121,7 +113,6 @@ export async function PATCH(req: Request) {
       where: { id: Number(id) },
       data: updateData,
     })
-    console.log('Servico atualizado', updatedServico)
     return NextResponse.json({ updatedServico })
   } catch (error) {
     return NextResponse.json(
